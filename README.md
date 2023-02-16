@@ -6,14 +6,13 @@
 
 ## Hew
 
-Hew is a simple and fast library to help oranize your Flutter app's presentation layer.  
+Hew is a simple and fast library that helps you organize your Flutter app's presentation layer.  
 
-Inspired by [Riverpod's](https://riverpod.dev/) StateNotifiers and [bloc's](https://pub.dev/packages/bloc) cubit, this library introduces two new entities - `Presenter` and `PresentationModel`.  
-It's worth to mention, that `Cubit` is designed to be used in Domain layer, while `Hew` finds its place completely in Presentation layer.  
+It's inspired by `StateNotifier` from [Riverpod](https://riverpod.dev/)  and `cubit` from [bloc](https://pub.dev/packages/bloc), and introduces two new entities: `Presenter` and `PresentationModel`.  
+  
+It's worth noting that `Cubit` is designed to be used in the domain layer, whereas `hew` is meant to be used exclusively in the presentation layer.  
 
-The goal of this library is providing convinent way to split StatefulWidgets into three different parts - `Model`, `Presenter` and `Widget`.  
-By doing so, you can easily test your `Presenter` and `Model` without having to worry about `Widget` itself.  
-In addition, this provides a way to easily separate your presentation logic from view logic itself.  
+The goal of this library is to provide a convenient way to split `StatefulWidget`s into three distinct parts:  `Model`, `Presenter` and `Widget`. By doing so, you can easily test your `Presenter` and `Model` without having to worry about `Widget` itself. Additionally, it separates your presentation logic from your view logic and makes your code easier to maintain.
 
 ## Configuring
 
@@ -123,11 +122,11 @@ class _CounterState extends PresenterState<CounterPresenter, CounterState, Count
 }
 ```
 
-If you for some reason don't want to use `PresenterState` (e.g. you want to use `StatefulHookWidget` from [flutter_hooks](https://pub.dev/packages/flutter_hooks)), you can use `PresenterProviderMixin` instead:
+If you for some reason don't want to use `PresenterState` (e.g. you want to also use `StatefulHookWidget` from [flutter_hooks](https://pub.dev/packages/flutter_hooks)), you can take a look on `PresenterProviderMixin`:
 
 ```dart
 class _CounterState extends State<Counter> 
-  with PresenterMixin<CounterPresenter, CounterState, Counter> { ... }
+  with PresenterProviderMixin<CounterPresenter, CounterState, Counter> { ... }
 ```
 
 
