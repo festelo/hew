@@ -1,18 +1,17 @@
-// TAKEN FROM: https://github.com/felangel/equatable/blob/master/packages/equatable/lib/src/equatable_utils.dart
-// MIT LICENSE
+// TAKEN FROM: https://github.com/felangel/equatable/blob/master/lib/src/equatable_utils.dart
+// Copyright: 2022, Felix Angelov.
+// Commit: c5f1bbe8aa21091d0a0d59834ec24aa71223a54e
+// Thank you Felix Angelov for this awesome library!
 
 import 'package:collection/collection.dart';
 
-int mapPropsToHashCode(Iterable? props) =>
-    _finish(props == null ? 0 : props.fold(0, _combine));
+int mapPropsToHashCode(Iterable? props) => _finish(props == null ? 0 : props.fold(0, _combine));
 
 /// Jenkins Hash Functions
 /// https://en.wikipedia.org/wiki/Jenkins_hash_function
 int _combine(int hash, dynamic object) {
   if (object is Map) {
-    object.keys
-        .sorted((dynamic a, dynamic b) => a.hashCode - b.hashCode)
-        .forEach((dynamic key) {
+    object.keys.sorted((dynamic a, dynamic b) => a.hashCode - b.hashCode).forEach((dynamic key) {
       hash = hash ^ _combine(hash, <dynamic>[key, object[key]]);
     });
     return hash;
