@@ -5,7 +5,7 @@ import 'package:hew/src/core/presentation_model.dart';
 
 typedef Listener = void Function();
 
-class Presenter<TModel extends PresentationModel> extends ChangeNotifier
+abstract class Presenter<TModel extends PresentationModel> extends ChangeNotifier
     implements BasePresenter {
   Presenter(this.model);
 
