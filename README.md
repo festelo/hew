@@ -8,7 +8,7 @@
 
 Hew is a simple and fast library that helps you organize your Flutter app's presentation layer.  
 
-It's inspired by `StateNotifier` from [Riverpod](https://riverpod.dev/)  and `cubit` from [bloc](https://pub.dev/packages/bloc), and introduces two new entities: `Presenter` and `PresentationModel`.  
+It's inspired by `StateNotifier` from [Riverpod](https://riverpod.dev/)  and `Cubit` from [bloc](https://pub.dev/packages/bloc), and introduces two new entities: `Presenter` and `PresentationModel`.  
   
 It's worth noting that `Cubit` is designed to be used in the domain layer, whereas `hew` is meant to be used exclusively in the presentation layer.  
 
@@ -29,11 +29,9 @@ dependencies:
 
 Presenter is a class that contains all the logic of your widget.
 
-The presenter is responsible for updating the model of the widget, and the widget is responsible for displaying the model.
+The presenter is responsible for updating a model of the widget, and the widget is responsible for displaying the model.
 
-By design, it should not contain any references to `BuildContext` or `StatefulWidget` itself.
-
-Let's look at simple counter presenter example:
+Let's look at the counter presenter example:
 
 ```dart
 class CounterPresenter extends Presenter<CounterModel> {
@@ -47,7 +45,7 @@ Here we have a simple presenter that creates `CounterModel` and increases counte
 
 ### Model
 
-Model is a class that contains all the data that is needed to display the widget.
+Model is a class that contains all data we want to be displayed in the widget.
 
 Let's create a simple model for our previous presenter:
 
@@ -67,7 +65,7 @@ You should pass all your mutable fields to `mutableProps` getter to make `Presen
   
 `MutableEquatableMixin` is a mixin that adds `mutableHashCode` to the model. This is an integer generated based on hashCodes of fields you pass to `mutableProps`.  
   
-Presenter uses `mutableHashCode` to make `notify` method notify its listeners only if there's any changes in model.
+Presenter uses `mutableHashCode` to make `notify` method notify its listeners only if there're any changes in model.
 
 ### Widget
 
@@ -88,14 +86,14 @@ class Counter extends PresenterWidget<CounterPresenter, CounterModel> {
   Widget build(context, presenter, model) {
     return TextButton(
       onPressed: presenter.onIncreaseCounterTap,
-      child: Text('${model.counter}'),
+      child: Text(model.counter.toString()),
     );
   }
 }
 ```
 
 Here we display the counter value inside `TextButton` and call `onIncreaseCounterTap` on `onPressed` event.   
-`PresenterWidget` maintains `Presenter` lifecycle and support automatic rebuilding on `model` changes.
+`PresenterWidget` maintains `Presenter` lifecycle and supports automatic rebuilding on `model` change.
   
 But sometimes we need to implement something more complex and in flutter we usually do it by using `StatefulWidget`. `Hew` has `PresenterStatefulWidget` for this:  
 
@@ -117,7 +115,7 @@ class _CounterState
   Widget build(BuildContext context) {
     return TextButton(
       onPressed: presenter.onIncreaseCounterTap,
-      child: Text('${model.counter}'),
+      child: Text(model.counter.toString()),
     );
   }
 }
@@ -135,7 +133,7 @@ class Counter extends StatelessWidget {
       resolver: () => CounterPresenter(),
       builder: (context, presenter, model) => TextButton(
         onPressed: presenter.onIncreaseCounterTap,
-        child: Text('${model.counter}'),
+        child: Text(model.counter.toString()),
       ),
     );
   }
@@ -164,7 +162,7 @@ Widget build(BuildContext context) {
     resolver: () => CounterPresenter(),
     builder: (context, presenter, model) => TextButton(
       onPressed: presenter.onIncreaseCounterTap,
-      child: Text('${model.counter}'),
+      child: Text(model.counter.toString()),
     ),
   );
 }
@@ -179,13 +177,13 @@ Widget build(context, presenter, model) {
     presenter: presenter,
     builder: (context) => TextButton(
       onPressed: presenter.onIncreaseCounterATap,
-      child: Text('${model.counterA}'),
+      child: Text(model.counter.toString()),
     ),
   );
 }
 ```
 
-If you want to rebuild your widget only when there are changes in some specific field, you can use `when` parameter, just specify a path to the field:  
+If you want to rebuild your widget only when changes are in some specific field, you can use `when` parameter, just specify a path to the field:  
 `when: (model) => model.counterB`.   
 
 If there are multiple fields, you can pass a list of fields as well:  
