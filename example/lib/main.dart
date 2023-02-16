@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hew_example/counter_builder.dart';
 import 'package:hew_example/counter_stateful.dart';
 import 'package:hew_example/counter_stateless.dart';
+import 'package:hew_example/counters_with_observer.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,6 +27,8 @@ class _MyAppState extends State<MyApp> {
           children: const [
             CounterStateful(),
             CounterStateless(),
+            CounterBuilder(),
+            CountersWithObserver(),
           ],
         ),
       ),

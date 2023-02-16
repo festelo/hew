@@ -1,51 +1,58 @@
 import 'package:flutter/widgets.dart';
 import 'package:hew/hew.dart';
 
-import 'package:hew/src/widgets/model_listener.dart';
-
 typedef BuildPresenterCallback<TPresenter extends Presenter<TPresentationModel>,
         TPresentationModel extends PresentationModel>
     = TPresenter Function();
 
-typedef PresenterProviderCallback<
-        TPresenter extends Presenter<TPresentationModel>,
+typedef PresenterBuilderCallback<TPresenter extends Presenter<TPresentationModel>,
         TPresentationModel extends PresentationModel>
     = Widget Function(
   BuildContext context,
   TPresenter presenter,
-  TPresentationModel state,
+  TPresentationModel model,
 );
 
-class PresenterProvider<TPresenter extends Presenter<TPresentationModel>,
+class PresenterBuilder<TPresenter extends Presenter<TPresentationModel>,
     TPresentationModel extends PresentationModel> extends StatefulWidget {
-  const PresenterProvider({
+  const PresenterBuilder({
     Key? key,
-    required this.presenter,
+    required this.resolver,
     required this.builder,
     this.rebuildOnChanges = true,
+    this.bindLifecycle = true,
   }) : super(key: key);
 
-  final BuildPresenterCallback<TPresenter, TPresentationModel> presenter;
-  final PresenterProviderCallback<TPresenter, TPresentationModel> builder;
+  final BuildPresenterCallback<TPresenter, TPresentationModel> resolver;
+  final PresenterBuilderCallback<TPresenter, TPresentationModel> builder;
 
   final bool rebuildOnChanges;
+  final bool bindLifecycle;
 
   @override
-  State<PresenterProvider> createState() =>
-      _PresenterProviderState<TPresenter, TPresentationModel>();
+  State<PresenterBuilder> createState() => _PresenterBuilderState<TPresenter, TPresentationModel>();
 }
 
-class _PresenterProviderState<TPresenter extends Presenter<TPresentationModel>,
+class _PresenterBuilderState<TPresenter extends Presenter<TPresentationModel>,
         TPresentationModel extends PresentationModel>
-    extends State<PresenterProvider<TPresenter, TPresentationModel>> {
-  late final TPresenter presenter = widget.presenter();
+    extends State<PresenterBuilder<TPresenter, TPresentationModel>> {
+  late final TPresenter presenter = widget.resolver();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.bindLifecycle) {
+      presenter.init();
+      presenter.postInit();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     if (widget.rebuildOnChanges) {
       return BridgeHook(
         presenter: presenter,
-        child: ModelListener(
+        child: ModelObserver(
           presenter: presenter,
           builder: (context) => widget.builder(
             context,
@@ -68,7 +75,9 @@ class _PresenterProviderState<TPresenter extends Presenter<TPresentationModel>,
 
   @override
   void dispose() {
-    presenter.dispose();
+    if (widget.bindLifecycle) {
+      presenter.dispose();
+    }
     super.dispose();
   }
 }

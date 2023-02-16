@@ -1,15 +1,15 @@
 import 'package:flutter/widgets.dart';
 import 'package:hew/src/core/presentation_model.dart';
 import 'package:hew/src/core/presenter.dart';
-import 'package:hew/src/mutable_equatable/mutable_equatable.dart';
+import 'package:hew/src/mutable_equatable/equatable_utils.dart';
 
 typedef ModelListenerWhen<TModel> = dynamic Function(TModel state);
 
-class ModelListener<TModel extends PresentationModel> extends StatefulWidget {
+class ModelObserver<TModel extends PresentationModel> extends StatefulWidget {
   /// Creates a widget that rebuilds when the given listenable changes.
   ///
   /// The [listenable] argument is required.
-  const ModelListener({
+  const ModelObserver({
     Key? key,
     required this.presenter,
     required this.builder,
@@ -21,10 +21,10 @@ class ModelListener<TModel extends PresentationModel> extends StatefulWidget {
   final WidgetBuilder builder;
 
   @override
-  State<ModelListener> createState() => _ModelListenerState();
+  State<ModelObserver> createState() => _ModelObserverState<TModel>();
 }
 
-class _ModelListenerState extends State<ModelListener> {
+class _ModelObserverState<TModel extends PresentationModel> extends State<ModelObserver<TModel>> {
   int? _whenPreviousHashCode;
 
   @override
@@ -35,7 +35,7 @@ class _ModelListenerState extends State<ModelListener> {
   }
 
   @override
-  void didUpdateWidget(ModelListener oldWidget) {
+  void didUpdateWidget(ModelObserver<TModel> oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.presenter != oldWidget.presenter) {
       oldWidget.presenter.removeListener(_handleChange);
@@ -60,11 +60,7 @@ class _ModelListenerState extends State<ModelListener> {
     if (widget.when == null) {
       return null;
     }
-    final when = widget.when!(widget.presenter.model);
-    if (when is MutableEquatable) {
-      return when.mutableHashCode;
-    }
-    return when.hashCode;
+    return mapPropToHashCode(widget.when!(widget.presenter.model));
   }
 
   void _handleChange() {

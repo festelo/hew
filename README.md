@@ -73,45 +73,46 @@ Presenter uses `mutableHashCode` to make `notify` method notify its listeners on
 
 Now it's time to display our model.
 
-We can do this by combination of `StatelessWidget` and `PresenterProvider`, by using `StatefulWidget` and `PresenterProviderMixin` or by using `StatefulWidget` and `PresenterState`.  
+We can do this by using `PresenterWidget`, `PresenterStatefulWidget` or by using `PresenterBuilder`. 
 
 Let's look how the first approach works:
 
 ```dart
-class Counter extends StatelessWidget {
+class Counter extends PresenterWidget<CounterPresenter, CounterModel> {
   const Counter({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return PresenterProvider<CounterPresenter, CounterState>(
-      presenter: () => CounterPresenter(),
-      builder: (context, presenter, state) => TextButton(
-        onPressed: presenter.onIncreaseCounterTap,
-        child: Text('${state.counter}'),
-      ),
+  CounterPresenter createPresenter() => CounterPresenter();
+
+  @override
+  Widget build(context, presenter, model) {
+    return TextButton(
+      onPressed: presenter.onIncreaseCounterTap,
+      child: Text('${model.counter}'),
     );
   }
 }
 ```
 
-Here we display the counter value inside `TextButton` and call `onIncreaseCounterTap` on `onPressed` event.
+Here we display the counter value inside `TextButton` and call `onIncreaseCounterTap` on `onPressed` event.   
+`PresenterWidget` maintains `Presenter` lifecycle and support automatic rebuilding on `model` changes.
   
-But sometimes we need to implement something more complex and in flutter we usually do it using `StatefulWidget`. With `hew` you can use `StatefulWidget` as you usually do, but `hew` tries to make your life even better with `PresenterProviderMixin` and `PresenterState`.  
+But sometimes we need to implement something more complex and in flutter we usually do it by using `StatefulWidget`. `Hew` has `PresenterStatefulWidget` for this:  
 
-When you mix in `PresenterProviderMixin` into your `StatefulWidget`, you get access to `presenter` and `state` properties. It also automatically handles `presenter` lifecycle for you and may rebuild your widget when `state` changes.
 
 ```dart
-class Counter extends StatefulWidget {
-  const Counter({Key? key}) : super(key: key);
+class Counter extends PresenterStatefulWidget<CounterPresenter> {
+  const Counter({super.key});
 
-  @override
-  State createState() => _CounterState();
-}
-
-class _CounterState extends PresenterState<CounterPresenter, CounterState, Counter>
   @override
   CounterPresenter createPresenter() => CounterPresenter();
 
+  @override
+  PresenterState createState() => _CounterState();
+}
+
+class _CounterState
+    extends PresenterState<CounterPresenter, CounterModel, Counter> {
   @override
   Widget build(BuildContext context) {
     return TextButton(
@@ -122,13 +123,73 @@ class _CounterState extends PresenterState<CounterPresenter, CounterState, Count
 }
 ```
 
-If you for some reason don't want to use `PresenterState` (e.g. you want to also use `StatefulHookWidget` from [flutter_hooks](https://pub.dev/packages/flutter_hooks)), you can take a look on `PresenterProviderMixin`:
+And if you want to be more flexible, you can use `PresenterBuilder`:
 
 ```dart
-class _CounterState extends State<Counter> 
-  with PresenterProviderMixin<CounterPresenter, CounterState, Counter> { ... }
+class Counter extends StatelessWidget {
+  const Counter({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return PresenterBuilder<CounterPresenter, CounterModel>(
+      resolver: () => CounterPresenter(),
+      builder: (context, presenter, model) => TextButton(
+        onPressed: presenter.onIncreaseCounterTap,
+        child: Text('${model.counter}'),
+      ),
+    );
+  }
+}
+
 ```
 
+### ModelObserver
+
+All previous approaches by default automatically rebuild themself whenever the model changes. If you want to handle state changes manually, you can disable this behaviour and use `ModelObserver`.
+
+To disable automatic rebuilding, you can pass `false` to `rebuildOnChanges` parameter of `PresenterBuilder`, or override `rebuildOnChanges` getter in your `PresenterWidget` and `PresenterStatefulWidget`:
+
+```dart
+class Counter extends PresenterWidget<CounterPresenter> {
+  bool get rebuildOnChanges => false;
+  ...
+}
+
+// or
+
+@override
+Widget build(BuildContext context) {
+  return PresenterBuilder<CounterPresenter, CounterModel>(
+    rebuildOnChanges: false,
+    resolver: () => CounterPresenter(),
+    builder: (context, presenter, model) => TextButton(
+      onPressed: presenter.onIncreaseCounterTap,
+      child: Text('${model.counter}'),
+    ),
+  );
+}
+```
+
+Then you should use `ModelObserver` to track model changes:
+
+```dart
+@override
+Widget build(context, presenter, model) {
+  return ModelObserver(
+    presenter: presenter,
+    builder: (context) => TextButton(
+      onPressed: presenter.onIncreaseCounterATap,
+      child: Text('${model.counterA}'),
+    ),
+  );
+}
+```
+
+If you want to rebuild your widget only when there are changes in some specific field, you can use `when` parameter, just specify a path to the field:  
+`when: (model) => model.counterB`.   
+
+If there are multiple fields, you can pass a list of fields as well:  
+`when: (model) => [model.counterA, model.counterB]`.
 
 ## Expansions
 

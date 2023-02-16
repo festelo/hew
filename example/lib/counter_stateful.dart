@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:hew/hew.dart';
 import 'package:hew_example/presenter.dart';
 
-class CounterStateful extends StatefulWidget {
-  const CounterStateful({Key? key}) : super(key: key);
+class CounterStateful extends PresenterStatefulWidget<CounterStatefulPresenter> {
+  const CounterStateful({super.key});
 
-  @override
-  State createState() => _CounterStatefulState();
-}
-
-class _CounterStatefulState
-    extends PresenterState<CounterStatefulPresenter, CounterStatefulState, CounterStateful> {
   @override
   CounterStatefulPresenter createPresenter() => CounterStatefulPresenter();
 
+  @override
+  PresenterState createState() => _CounterStatefulState();
+}
+
+class _CounterStatefulState
+    extends PresenterState<CounterStatefulPresenter, CounterStatefulModel, CounterStateful> {
   @override
   Widget build(BuildContext context) {
     return TextButton(
@@ -23,13 +23,13 @@ class _CounterStatefulState
   }
 }
 
-class CounterStatefulPresenter extends CompletePresenter<CounterStatefulState> {
-  CounterStatefulPresenter() : super(CounterStatefulState());
+class CounterStatefulPresenter extends CompletePresenter<CounterStatefulModel> {
+  CounterStatefulPresenter() : super(CounterStatefulModel());
 
   void onIncreaseCounterTap() => notify(() => model.counter++);
 }
 
-class CounterStatefulState with MutableEquatableMixin {
+class CounterStatefulModel with MutableEquatableMixin {
   int counter = 0;
 
   @override
