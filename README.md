@@ -6,6 +6,131 @@
 
 ## Hew
 
-Hew is a simple and fast state management library for Flutter.  
-Inspired by [Riverpod's](https://riverpod.dev/) StateNotifiers and [bloc](https://pub.dev/packages/bloc) libraries, this library introduces two new entities - `Presenter` and `State` to help you separate presentation code on different UI, Logic and Data parts.
+Hew is a simple and fast library to help oranize your Flutter app's presentation layer.  
 
+Inspired by [Riverpod's](https://riverpod.dev/) StateNotifiers and [bloc's](https://pub.dev/packages/bloc) cubit, this library introduces two new entities - `Presenter` and `PresentationModel`.  
+It's worth to mention, that `Cubit` is designed to be used in Domain layer, while `Hew` finds its place completely in Presentation layer.  
+
+The goal of this library is providing convinent way to split StatefulWidgets into three different parts - `Model`, `Presenter` and `Widget`.  
+By doing so, you can easily test your `Presenter` and `Model` without having to worry about `Widget` itself.  
+In addition, this provides a way to easily separate your presentation logic from view logic itself.  
+
+## Configuring
+
+Add `hew` to your `pubspec.yaml` file:
+
+```yaml
+dependencies:
+  hew: ^0.0.1
+```
+
+## Usage
+
+### Presenter
+
+Presenter is a class that contains all the logic of your widget.
+
+The presenter is responsible for updating the model of the widget, and the widget is responsible for displaying the model.
+
+By design, it should not contain any references to `BuildContext` or `StatefulWidget` itself.
+
+Let's look at simple counter presenter example:
+
+```dart
+class CounterPresenter extends Presenter<CounterModel> {
+  CounterPresenter() : super(CounterModel());
+
+  void onIncreaseCounterTap() => notify(() => model.counter++);
+}
+```
+
+Here we have a simple presenter that creates `CounterModel` and increases counter by one on `onIncreaseCounterTap` call.
+
+### Model
+
+Model is a class that contains all the data that is needed to display the widget.
+
+Let's create a simple model for our previous presenter:
+
+```dart
+class CounterModel with MutableEquatableMixin {
+  int counter = 0;
+
+  @override
+  List<Object?> get mutableProps => [counter];
+}
+```
+
+The model contains only one field - `counter`, the value we want to display.  
+  
+It also mixes in `MutableEquatableMixin` and overrides `mutableProps` getter.  
+You should pass all your mutable fields to `mutableProps` getter to make `Presenter` behave correctly.  
+  
+`MutableEquatableMixin` is a mixin that adds `mutableHashCode` to the model. This is an integer generated based on hashCodes of fields you pass to `mutableProps`.  
+  
+Presenter uses `mutableHashCode` to make `notify` method notify its listeners only if there's any changes in model.
+
+### Widget
+
+Now it's time to display our model.
+
+We can do this by combination of `StatelessWidget` and `PresenterProvider`, by using `StatefulWidget` and `PresenterProviderMixin` or by using `StatefulWidget` and `PresenterState`.  
+
+Let's look how the first approach works:
+
+```dart
+class Counter extends StatelessWidget {
+  const Counter({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return PresenterProvider<CounterPresenter, CounterState>(
+      presenter: () => CounterPresenter(),
+      builder: (context, presenter, state) => TextButton(
+        onPressed: presenter.onIncreaseCounterTap,
+        child: Text('${state.counter}'),
+      ),
+    );
+  }
+}
+```
+
+Here we display the counter value inside `TextButton` and call `onIncreaseCounterTap` on `onPressed` event.
+  
+But sometimes we need to implement something more complex and in flutter we usually do it using `StatefulWidget`. With `hew` you can use `StatefulWidget` as you usually do, but `hew` tries to make your life even better with `PresenterProviderMixin` and `PresenterState`.  
+
+When you mix in `PresenterProviderMixin` into your `StatefulWidget`, you get access to `presenter` and `state` properties. It also automatically handles `presenter` lifecycle for you and may rebuild your widget when `state` changes.
+
+```dart
+class Counter extends StatefulWidget {
+  const Counter({Key? key}) : super(key: key);
+
+  @override
+  State createState() => _CounterState();
+}
+
+class _CounterState extends PresenterState<CounterPresenter, CounterState, Counter>
+  @override
+  CounterPresenter createPresenter() => CounterPresenter();
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: presenter.onIncreaseCounterTap,
+      child: Text('${model.counter}'),
+    );
+  }
+}
+```
+
+If you for some reason don't want to use `PresenterState` (e.g. you want to use `StatefulHookWidget` from [flutter_hooks](https://pub.dev/packages/flutter_hooks)), you can use `PresenterProviderMixin` instead:
+
+```dart
+class _CounterState extends State<Counter> 
+  with PresenterMixin<CounterPresenter, CounterState, Counter> { ... }
+```
+
+
+## Expansions
+
+TBD

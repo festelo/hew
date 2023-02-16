@@ -1,29 +1,33 @@
 import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 import 'package:hew/src/core/base_presenter.dart';
-import 'package:hew/src/core/presentation_state.dart';
+import 'package:hew/src/core/presentation_model.dart';
 
 typedef Listener = void Function();
 
-class Presenter<TState extends PresentationState> extends ChangeNotifier
+class Presenter<TModel extends PresentationModel> extends ChangeNotifier
     implements BasePresenter {
-  Presenter(this.state);
+  Presenter(this.model);
 
-  final TState state;
+  final TModel model;
 
   int? _previousMutableHashCode;
 
   @override
-  void initState() {}
+  @mustCallSuper
+  void init() {}
 
   @override
-  void postInitState() {
-    _previousMutableHashCode = state.mutableHashCode;
+  @internal
+  void postInit() {
+    _previousMutableHashCode = model.mutableHashCode;
   }
 
   @override
   @protected
+  @internal
   void notifyListeners() {
-    final currentMutableHashCode = state.mutableHashCode;
+    final currentMutableHashCode = model.mutableHashCode;
     if (_previousMutableHashCode == currentMutableHashCode) {
       return;
     }
@@ -32,5 +36,26 @@ class Presenter<TState extends PresentationState> extends ChangeNotifier
   }
 
   @override
-  void notify() => notifyListeners();
+  @protected
+  void notify([VoidCallback? fn]) {
+    final Object? result = fn?.call() as dynamic;
+    assert(() {
+      if (result is Future) {
+        throw FlutterError.fromParts(<DiagnosticsNode>[
+          ErrorSummary('notify() callback argument returned a Future.'),
+          ErrorDescription(
+            'The notify() method on $this was called with a closure or method that '
+            'returned a Future. Maybe it is marked as "async".',
+          ),
+          ErrorHint(
+            'Instead of performing asynchronous work inside a call to notify(), first '
+            'execute the work (without updating the widget model), and then synchronously '
+            'update the model inside a call to seTModel().',
+          ),
+        ]);
+      }
+      return true;
+    }());
+    notifyListeners();
+  }
 }
