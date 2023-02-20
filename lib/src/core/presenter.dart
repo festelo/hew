@@ -1,15 +1,19 @@
 import 'package:flutter/foundation.dart';
+import 'package:hew/src/mutable_equatable/equatable_utils.dart';
 import 'package:meta/meta.dart';
 import 'package:hew/src/core/base_presenter.dart';
-import 'package:hew/src/core/presentation_model.dart';
 
 typedef Listener = void Function();
 
-abstract class Presenter<TModel extends PresentationModel> extends ChangeNotifier
-    implements BasePresenter {
-  Presenter(this.model);
+abstract class Presenter<TModel> extends ChangeNotifier implements BasePresenter {
+  Presenter(TModel model) : _model = model;
 
-  final TModel model;
+  TModel _model;
+
+  TModel get model => _model;
+
+  @protected
+  set model(model) => _model = model;
 
   int? _previousMutableHashCode;
 
@@ -20,14 +24,14 @@ abstract class Presenter<TModel extends PresentationModel> extends ChangeNotifie
   @override
   @internal
   void postInit() {
-    _previousMutableHashCode = model.mutableHashCode;
+    _previousMutableHashCode = mapPropToHashCode(model);
   }
 
   @override
   @protected
   @internal
   void notifyListeners() {
-    final currentMutableHashCode = model.mutableHashCode;
+    final currentMutableHashCode = mapPropToHashCode(model);
     if (_previousMutableHashCode == currentMutableHashCode) {
       return;
     }
@@ -37,6 +41,7 @@ abstract class Presenter<TModel extends PresentationModel> extends ChangeNotifie
 
   @override
   @protected
+  @visibleForTesting
   void notify([VoidCallback? fn]) {
     final Object? result = fn?.call() as dynamic;
     assert(() {

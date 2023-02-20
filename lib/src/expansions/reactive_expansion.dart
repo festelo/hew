@@ -1,49 +1,44 @@
 import 'dart:async';
 
 import 'package:hew/src/core/base_presenter.dart';
+import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 
 mixin ReactiveExpansion on BasePresenter {
-  final List<StreamSubscription> _listenables = [];
-  final Map<String, StreamSubscription> _namedListenables = {};
+  final List<StreamSubscription> _subscriptions = [];
+  final Map<String, StreamSubscription> _namedSubscriptions = {};
 
+  @protected
   StreamSubscription listen<T>(
     Stream<T> stream,
     void Function(T) onData, {
-    String? name,
+    String? subscriptionName,
     void Function(dynamic, StackTrace)? onError,
-    bool autoNotify = true,
   }) {
     StreamSubscription sub;
-    final callback = autoNotify
-        ? (T data) {
-            onData(data);
-            notify();
-          }
-        : onData;
     if (stream is ValueStream<T> && stream.hasValue) {
       onData(stream.value);
       sub = stream.skip(1).listen(
-            callback,
+            onData,
             onError: onError,
           );
     } else {
       sub = stream.listen(
-        callback,
+        onData,
         onError: onError,
       );
     }
-    _listenables.add(sub);
-    if (name != null) {
-      _namedListenables[name]?.cancel();
-      _namedListenables[name] = sub;
+    _subscriptions.add(sub);
+    if (subscriptionName != null) {
+      _namedSubscriptions[subscriptionName]?.cancel();
+      _namedSubscriptions[subscriptionName] = sub;
     }
     return sub;
   }
 
   @override
   void dispose() {
-    for (final l in _listenables) {
+    for (final l in _subscriptions) {
       l.cancel();
     }
     super.dispose();

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 abstract class BasePresenter {
   @mustCallSuper
-  void init() {}
+  void init();
 
   @mustCallSuper
-  void postInit() {}
+  void postInit();
 
   @protected
   void notify([VoidCallback? fn]);
 
   @mustCallSuper
-  void dispose() {}
+  void dispose();
 }

@@ -1,11 +1,9 @@
 import 'package:flutter/widgets.dart';
-import 'package:hew/src/core/presentation_model.dart';
 import 'package:hew/src/core/presenter.dart';
 import 'package:hew/src/widgets/presenter_builder.dart';
 import 'package:hew/src/widgets/presenter_widget.dart';
 
-class PresenterElement<TPresenter extends Presenter<TModel>, TModel extends PresentationModel>
-    extends ComponentElement {
+class PresenterElement<TPresenter extends Presenter<TModel>, TModel> extends ComponentElement {
   PresenterElement(this._widget) : super(_widget);
 
   final PresenterWidget<TPresenter, TModel> _widget;

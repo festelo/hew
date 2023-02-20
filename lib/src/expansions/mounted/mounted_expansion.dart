@@ -7,6 +7,8 @@ typedef _MountedResolver = bool Function();
 
 mixin MountedExpansion on BasePresenter {
   _MountedResolver? _mountedResolver;
+
+  @protected
   bool get mounted => _mountedResolver?.call() ?? false;
 
   void _setMountedResolver(_MountedResolver resolver) {

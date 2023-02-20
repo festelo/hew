@@ -2,8 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:hew/hew.dart';
 import 'package:hew/src/elements/presenter_element.dart';
 
-abstract class PresenterWidget<TPresenter extends Presenter<TModel>,
-    TModel extends PresentationModel> extends Widget {
+abstract class PresenterWidget<TPresenter extends Presenter<TModel>, TModel> extends Widget {
   const PresenterWidget({Key? key}) : super(key: key);
 
   TPresenter createPresenter();

@@ -20,7 +20,7 @@ abstract class PresenterStatefulWidget<TPresenter extends Presenter> extends Sta
 
 abstract class PresenterState< //
     TPresenter extends Presenter<TModel>,
-    TModel extends PresentationModel, //
+    TModel, //
     TWidget extends PresenterStatefulWidget<TPresenter> //
     > extends State<TWidget> {
   late final TPresenter presenter = widget.createPresenter();

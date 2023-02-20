@@ -1,20 +1,19 @@
 import 'package:flutter/widgets.dart';
 import 'package:hew/hew.dart';
 
-typedef BuildPresenterCallback<TPresenter extends Presenter<TPresentationModel>,
-        TPresentationModel extends PresentationModel>
+typedef BuildPresenterCallback<TPresenter extends Presenter<TPresentationModel>, TPresentationModel>
     = TPresenter Function();
 
 typedef PresenterBuilderCallback<TPresenter extends Presenter<TPresentationModel>,
-        TPresentationModel extends PresentationModel>
+        TPresentationModel>
     = Widget Function(
   BuildContext context,
   TPresenter presenter,
   TPresentationModel model,
 );
 
-class PresenterBuilder<TPresenter extends Presenter<TPresentationModel>,
-    TPresentationModel extends PresentationModel> extends StatefulWidget {
+class PresenterBuilder<TPresenter extends Presenter<TPresentationModel>, TPresentationModel>
+    extends StatefulWidget {
   const PresenterBuilder({
     Key? key,
     required this.resolver,
@@ -33,8 +32,7 @@ class PresenterBuilder<TPresenter extends Presenter<TPresentationModel>,
   State<PresenterBuilder> createState() => _PresenterBuilderState<TPresenter, TPresentationModel>();
 }
 
-class _PresenterBuilderState<TPresenter extends Presenter<TPresentationModel>,
-        TPresentationModel extends PresentationModel>
+class _PresenterBuilderState<TPresenter extends Presenter<TPresentationModel>, TPresentationModel>
     extends State<PresenterBuilder<TPresenter, TPresentationModel>> {
   late final TPresenter presenter = widget.resolver();
 

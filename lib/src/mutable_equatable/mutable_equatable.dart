@@ -2,6 +2,7 @@ import 'equatable_utils.dart';
 
 abstract class MutableEquatable {
   List<Object?> get mutableProps;
+
   int get mutableHashCode => mapPropsToHashCode(mutableProps);
 }
 

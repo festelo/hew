@@ -1,11 +1,10 @@
 import 'package:flutter/widgets.dart';
-import 'package:hew/src/core/presentation_model.dart';
 import 'package:hew/src/core/presenter.dart';
 import 'package:hew/src/mutable_equatable/equatable_utils.dart';
 
-typedef ModelListenerWhen<TModel> = dynamic Function(TModel state);
+typedef ModelListenerWhen<TModel> = dynamic Function(TModel model);
 
-class ModelObserver<TModel extends PresentationModel> extends StatefulWidget {
+class ModelObserver<TModel> extends StatefulWidget {
   /// Creates a widget that rebuilds when the given listenable changes.
   ///
   /// The [listenable] argument is required.
@@ -24,7 +23,7 @@ class ModelObserver<TModel extends PresentationModel> extends StatefulWidget {
   State<ModelObserver> createState() => _ModelObserverState<TModel>();
 }
 
-class _ModelObserverState<TModel extends PresentationModel> extends State<ModelObserver<TModel>> {
+class _ModelObserverState<TModel> extends State<ModelObserver<TModel>> {
   int? _whenPreviousHashCode;
 
   @override

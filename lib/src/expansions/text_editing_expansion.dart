@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 mixin TextEditingExpansion on BasePresenter {
   final List<TextEditingController> _controllers = [];
 
+  @protected
   TextEditingController useTextEditingController() {
     final controller = TextEditingController();
     _controllers.add(controller);

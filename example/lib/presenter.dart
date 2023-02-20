@@ -1,10 +1,6 @@
 import 'package:hew/hew.dart';
 
-class CompletePresenter<T extends PresentationModel> extends Presenter<T>
-    with
-        MountedExpansion,
-        DisposableExpansion,
-        ReactiveExpansion,
-        TextEditingExpansion {
+class CompletePresenter<T> extends Presenter<T>
+    with MountedExpansion, ReactiveExpansion, TextEditingExpansion {
   CompletePresenter(super.state);
 }
