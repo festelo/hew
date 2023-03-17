@@ -5,12 +5,13 @@ homepage: https://github.com/festelo/hew
 
 environment:
   sdk: ">=2.14.0 <3.0.0"
+  flutter: ">=2.5.0"
 
 dependencies:
-  collection: ^1.17.0
   flutter:
     sdk: flutter
-    
+
+  collection: ^1.17.0
   meta: ^1.8.0
   rxdart: ^0.27.7
 
