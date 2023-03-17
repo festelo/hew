@@ -1,0 +1,54 @@
+name: Tests
+
+on: 
+  push:
+  pull_request:
+  schedule:
+    # runs the CI everyday at 10AM
+    - cron: "0 10 * * *"
+
+concurrency:
+  group: build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  hew_tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        sdk: [stable, beta, master]
+        include:
+          - sdk: stable
+            analyze: true
+            codecov: true
+          - sdk: beta
+            analyze: false # sometimes it's not possible to solve all linting issues in beta without breaking stable
+            codecov: false # we don't want to upload coverage twice
+          - sdk: master
+            analyze: false # sometimes it's not possible to solve all linting issues in master without breaking stable
+            codecov: false # we don't want to upload coverage twice
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup subosito/flutter-action@v2
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ matrix.sdk }}
+          architecture: x64
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+        if: matrix.analyze == true
+
+      - name: Run tests
+        run: flutter test --coverage
+
+      - name: Upload coverage to codecov
+        uses: codecov/codecov-action@v2
+        with:
+          files: ./coverage/lcov.info
+        if: matrix.codecov == true
