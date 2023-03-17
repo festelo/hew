@@ -3,7 +3,6 @@ export 'src/core/presentation_model.dart';
 export 'src/core/presenter.dart';
 
 export 'src/expansions/mounted/mounted_expansion.dart';
-export 'src/expansions/reactive_expansion.dart';
 export 'src/expansions/text_editing_expansion.dart';
 
 export 'src/mutable_equatable/mutable_equatable.dart';

@@ -5,9 +5,10 @@ import 'package:hew/src/mutable_equatable/equatable_utils.dart';
 typedef ModelListenerWhen<TModel> = dynamic Function(TModel model);
 
 class ModelObserver<TModel> extends StatefulWidget {
-  /// Creates a widget that rebuilds when the given listenable changes.
+  /// Creates a widget that rebuilds when state of the [presenter] changes.
   ///
-  /// The [listenable] argument is required.
+  /// If you want to rebuild only when some properties of the [Presenter.model] changes,
+  /// you can specify [when] function.
   const ModelObserver({
     Key? key,
     required this.presenter,

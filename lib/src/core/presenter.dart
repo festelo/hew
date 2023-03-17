@@ -3,13 +3,15 @@ import 'package:hew/src/mutable_equatable/equatable_utils.dart';
 import 'package:meta/meta.dart';
 import 'package:hew/src/core/base_presenter.dart';
 
-typedef Listener = void Function();
-
+/// Base class for presenters, designed to be an ancestor of all presenters.
+/// Should contain logic of your presentation layer.
 abstract class Presenter<TModel> extends ChangeNotifier implements BasePresenter {
+  /// Creates a presenter with the given [model].
   Presenter(TModel model) : _model = model;
 
   TModel _model;
 
+  /// Current model of the presenter.
   TModel get model => _model;
 
   @protected

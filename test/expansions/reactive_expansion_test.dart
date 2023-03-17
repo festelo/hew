@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:hew/rx.dart';
 import 'package:hew/hew.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
@@ -52,7 +53,8 @@ void main() {
     expect(callbackExecutedCount, 1);
   });
 
-  test('ReactiveExpansion emits value synchronous when ValueStream is used', () async {
+  test('ReactiveExpansion emits value synchronous when ValueStream is used',
+      () async {
     const expectedValue = 10;
     final presenter = ReactivePresenter();
     final subject = BehaviorSubject<int>.seeded(expectedValue);
@@ -77,7 +79,9 @@ void main() {
     presenter.dispose();
   });
 
-  test('ReactiveExpansion replaces subscription when same `subscriptionName` is used', () async {
+  test(
+      'ReactiveExpansion replaces subscription when same `subscriptionName` is used',
+      () async {
     final presenter = ReactivePresenter();
     final subjectA = PublishSubject<int>();
     final subjectB = PublishSubject<int>();
