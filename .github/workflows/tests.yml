@@ -21,10 +21,10 @@ jobs:
         include:
           - sdk: stable
             analyze: true
-            codecov: true
+            codecov: false # mixin coverage problem on stable - https://github.com/flutter/flutter/issues/119906
           - sdk: beta
             analyze: false # sometimes it's not possible to solve all linting issues in beta without breaking stable
-            codecov: false # we don't want to upload coverage twice
+            codecov: true
           - sdk: master
             analyze: false # sometimes it's not possible to solve all linting issues in master without breaking stable
             codecov: false # we don't want to upload coverage twice
