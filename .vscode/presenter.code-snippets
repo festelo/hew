@@ -1,0 +1,51 @@
+{
+	"Core Presenter": {
+		"prefix": ["pr", "pres", "presenter"],
+		"body": [
+			"class ${1/([a-zA-Z])(.*)/${1:/upcase}$2/}Presenter extends CompletePresenter<${1/([a-zA-Z])(.*)/${1:/upcase}$2/}State> {",
+				"${1/([a-zA-Z])(.*)/${1:/upcase}$2/}Presenter() : super(${1/([a-zA-Z])(.*)/${1:/upcase}$2/}State());",
+			"}"
+		],
+	},
+	"Core State": {
+		"prefix": ["st", "state"],
+		"body": [
+			"class ${1/([a-zA-Z])(.*)/${1:/upcase}$2/}State with MutableEquatableMixin {",
+				"",
+				"@override",
+				"List<Object?> get mutableProps => [ throw UnimplementedError() ];",
+			"}",
+		],
+	},
+	"Presenter Widget Mixin": {
+		"prefix": ["pw", "prewid", "preswid", "presenterwidget"],
+		"body": [
+			"class ${1/([a-zA-Z])(.*)/${1:/upcase}$2/} extends StatefulWidget with PresenterWidgetMixin<${1/([a-zA-Z])(.*)/${1:/upcase}$2/}Presenter> {",
+			"",
+			"  const ${1/([a-zA-Z])(.*)/${1:/upcase}$2/}({Key? key}) : super(key: key);",
+			"",
+			"  @override",
+			"  ${1/([a-zA-Z])(.*)/${1:/upcase}$2/}Presenter createPresenter() => ${1/([a-zA-Z])(.*)/${1:/upcase}$2/}Presenter();",
+			"",
+			"  @override",
+			"  State createState() => _${1/([a-zA-Z])(.*)/${1:/upcase}$2/}State();",
+		    "}",
+			"",
+			"class _${1/([a-zA-Z])(.*)/${1:/upcase}$2/}State extends PresenterState<${1/([a-zA-Z])(.*)/${1:/upcase}$2/}State, ${1/([a-zA-Z])(.*)/${1:/upcase}$2/}Presenter, ${1/([a-zA-Z])(.*)/${1:/upcase}$2/}> {",
+			"  @override",
+			"  Widget build(BuildContext context) {",
+			"    return Container();",
+			"  }",
+			"}",
+		],
+	},
+	"Presenter Provider": {
+		"prefix": ["pp", "prepro", "prespro", "presenterprovider"],
+		"body": [
+			"PresenterProvider<${1/([a-zA-Z])(.*)/${1:/upcase}$2/}Presenter, ${1/([a-zA-Z])(.*)/${1:/upcase}$2/}State>(",
+			"  presenter: () => ${1/([a-zA-Z])(.*)/${1:/upcase}$2/}Presenter(),",
+			"  builder: (context, presenter, state) => ${0:const Placeholder()}",
+			")",
+		],
+	},
+}
